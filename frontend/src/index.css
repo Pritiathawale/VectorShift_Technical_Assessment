@@ -1,0 +1,379 @@
+/* body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} */
+/*  */
+/* code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+} */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Surfaces */
+  --bg-canvas: #0c0e13;
+  --bg-surface: #14171f;
+  --bg-node: #181c25;
+
+  /* Borders */
+  --border-subtle: #232838;
+  --border-node: #283044;
+  --border-node-hover: #3a4358;
+
+  /* Text */
+  --text-primary: #e9ebf0;
+  --text-secondary: #8b93a7;
+  --text-tertiary: #5b6478;
+
+  /* Accents -- one per node family, used for the top border + header dot */
+  --accent-input: #34d399;
+  --accent-output: #60a5fa;
+  --accent-llm: #c084fc;
+  --accent-text: #fbbf24;
+  --accent-math: #fb923c;
+  --accent-filter: #2dd4bf;
+  --accent-api: #38bdf8;
+  --accent-note: #9ca3af;
+  --accent-conditional: #f472b6;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code { font-family: var(--font-mono); }
+input, select, textarea, button { font-family: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------- Node abstraction styles ---------- */
+
+.vs-node {
+  position: relative;
+  background: var(--bg-node);
+  border: 1px solid var(--border-node);
+  border-top: 3px solid var(--node-accent, var(--accent-input));
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  font-size: 12.5px;
+  transition: border-color 0.15s ease, width 0.12s ease;
+}
+
+.vs-node:hover {
+  border-color: var(--border-node-hover);
+}
+
+.vs-node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.vs-node-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--node-accent, var(--accent-input));
+  box-shadow: 0 0 6px var(--node-accent, var(--accent-input));
+}
+
+.vs-node-title {
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+}
+
+.vs-node-description {
+  padding: 8px 12px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.vs-node-body {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vs-field-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.vs-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-node);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 6px 8px;
+  font-size: 12.5px;
+  outline: none;
+  width: 100%;
+}
+
+.vs-input:focus {
+  border-color: var(--node-accent, var(--accent-input));
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+}
+
+.vs-textarea {
+  resize: none;
+  font-family: var(--font-mono);
+  line-height: 1.4;
+  overflow: hidden;
+}
+
+.vs-handle {
+  width: 9px !important;
+  height: 9px !important;
+  background: var(--bg-canvas) !important;
+  border: 2px solid var(--text-tertiary) !important;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.vs-handle:hover {
+  border-color: var(--text-primary) !important;
+  transform: scale(1.2);
+}
+
+.vs-handle-label {
+  position: absolute;
+  transform: translateY(-50%);
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  pointer-events: none;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-node);
+  border-radius: 4px;
+  padding: 2px 5px;
+  z-index: 2;
+}
+ 
+.vs-handle-label--left {
+  right: calc(100% + 9px);
+}
+ 
+.vs-handle-label--right {
+  left: calc(100% + 9px);
+}
+
+.vs-submit-bar {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+ 
+.vs-submit-btn {
+  background: var(--accent-llm);
+  color: #14171f;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 28px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(192, 132, 252, 0.35);
+  transition: opacity 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+ 
+.vs-submit-btn:hover:not(:disabled) {
+  opacity: 0.92;
+  box-shadow: 0 8px 24px rgba(192, 132, 252, 0.45);
+}
+ 
+.vs-submit-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+ 
+.vs-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+ 
+/* ---------- App shell ---------- */
+ 
+.vs-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+ 
+.vs-header {
+  display: flex;
+  align-items: center;
+  height: var(--header-height, 56px);
+  padding: 0 20px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+ 
+.vs-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+ 
+.vs-brand-mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--accent-llm), var(--accent-api));
+  flex-shrink: 0;
+}
+ 
+.vs-brand-name {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  color: var(--text-primary);
+}
+ 
+/* ---------- Toolbar / draggable chips ---------- */
+ 
+.vs-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+ 
+.vs-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 7px;
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-node);
+  cursor: grab;
+  font-size: 12.5px;
+  font-weight: 500;
+  user-select: none;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+ 
+.vs-chip:hover {
+  border-color: var(--chip-accent);
+}
+ 
+.vs-chip:active {
+  cursor: grabbing;
+  transform: scale(0.96);
+}
+ 
+.vs-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--chip-accent);
+  box-shadow: 0 0 6px var(--chip-accent);
+  flex-shrink: 0;
+}
+ 
+.vs-chip-label {
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+ 
+/* ---------- Canvas ---------- */
+ 
+.vs-canvas-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+ 
+.vs-canvas {
+  width: 100%;
+  height: 100%;
+}
+ 
+/* ---------- React Flow theme overrides ---------- */
+ 
+.react-flow__minimap {
+  background-color: #1c2030 !important;
+  border-radius: 8px;
+  border: 1px solid var(--border-node-hover);
+}
+ 
+.react-flow__controls {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+ 
+.react-flow__controls-button {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  fill: var(--text-secondary) !important;
+}
+ 
+.react-flow__controls-button:hover {
+  background: var(--bg-surface-raised) !important;
+}
+ 
+.react-flow__edge-path {
+  stroke: #4a5570;
+  stroke-width: 1.5;
+}
+ 
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: var(--text-secondary);
+}
+ 
+.react-flow__connectionline path {
+  stroke: var(--accent-llm);
+  stroke-width: 1.5;
+}
+ 
+.react-flow__attribution {
+  display: none;
+}
